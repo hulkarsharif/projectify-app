@@ -5,7 +5,7 @@ class UserService {
         try {
             await prisma.user.create({ data: input });
         } catch (error) {
-            return error;
+            throw new Error(error);
         }
     };
 }
