@@ -4,8 +4,8 @@ class UserService {
     signUp = async (input) => {
         try {
             await prisma.user.create({ data: input });
-        } catch (error) {
-            throw new Error(error);
+        } catch (err) {
+            throw new Error(err);
         }
     };
 }
