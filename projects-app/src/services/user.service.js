@@ -13,6 +13,7 @@ class UserService {
             throw new Error(error);
         }
     };
+
     login = async (input) => {
         try {
             const user = await prisma.user.findFirst({
@@ -31,6 +32,14 @@ class UserService {
             if (!isPasswordMatching) {
                 throw new Error("Invalid Credentials");
             }
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    update = async (input, id) => {
+        try {
+            await prisma.user.update({ where: { id }, data: input });
         } catch (error) {
             throw error;
         }
