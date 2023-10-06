@@ -1,13 +1,13 @@
 import { prisma } from "../prisma/index.js";
-import { hashFunction, generateSalt } from "../utils/hash.js";
+// import { hashFunction, generateSalt } from "../utils/hash.js";
+import { hasher } from "../utils/hash.js";
 
 class UserService {
     signUp = async (input) => {
         try {
-            const salt = generateSalt();
-            const hashedPassword = hashFunction(input.password + salt);
+            const hashedPassword = await hasher.hash(input.password);
             await prisma.user.create({
-                data: { ...input, password: `${salt}.${hashedPassword}` }
+                data: { ...input, password: hashedPassword }
             });
         } catch (error) {
             throw new Error(error);
@@ -24,11 +24,11 @@ class UserService {
             if (!user) {
                 throw new Error("Invalid Credentials");
             }
-
-            const [salt, userHashedPassword] = user.password.split(".");
-            const hashedPassword = hashFunction(input.password + salt);
-
-            if (userHashedPassword !== hashedPassword) {
+            const isPasswordMatching = await hasher.compare(
+                input.password,
+                user.password
+            );
+            if (!isPasswordMatching) {
                 throw new Error("Invalid Credentials");
             }
         } catch (error) {
