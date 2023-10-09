@@ -2,6 +2,7 @@ import { userService } from "../services/user.service.js";
 class UserController {
     signUp = async (req, res) => {
         const { body } = req;
+
         const input = {
             email: body.email,
             preferredFirstName: body.preferredFirstName,
@@ -43,24 +44,51 @@ class UserController {
         }
     };
 
-    update = async (req, res) => {
-        const allowedFields = ["firstName", "lastName", "bio"];
-        const { body, params } = req;
-        // if (!params.id) {
-        //     res.status(400).json({ message: "Missing user id" });
-        // }
+    // update = async (req, res) => {
+    //     const allowedFields = ["firstName", "lastName", "bio"];
+    //     const { body, params } = req;
+    //     // if (!params.id) {
+    //     //     res.status(400).json({ message: "Missing user id" });
+    //     // }
 
-        const input = {};
-        allowedFields.forEach((field) => {
-            if (body[field]) {
-                input[field] = body[field];
-            }
-        });
+    //     const input = {};
+    //     allowedFields.forEach((field) => {
+    //         if (body[field]) {
+    //             input[field] = body[field];
+    //         }
+    //     });
+    //     try {
+    //         await userService.update(input, params.id);
+    //         res.status(204).send();
+    //     } catch (error) {
+    //         res.status(500).json({ message: error });
+    //     }
+    // };
+
+    activate = async (req, res) => {
+        const {
+            query: { activationToken }
+        } = req;
+
+        if (!activationToken) {
+            res.status(400).json({
+                message: "Activation Token is missing"
+            });
+
+            return;
+        }
+
         try {
-            await userService.update(input, params.id);
-            res.status(204).send();
+            await userService.activate(activationToken);
+
+            res.status(200).json({
+                message: "Success"
+            });
         } catch (error) {
-            res.status(500).json({ message: error });
+            console.log(error);
+            res.status(500).json({
+                message: error.message
+            });
         }
     };
 }

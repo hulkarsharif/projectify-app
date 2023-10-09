@@ -1,12 +1,6 @@
 import bcrypt from "bcryptjs";
 // import crypto from "crypto-js";
 
-// export const hashFunction = (input) => {
-//     const hash = crypto.SHA256(input);
-//     const hashString = hash.toString(crypto.enc.Hex);
-//     return hashString;
-// };
-
 // export const generateSalt = () => {
 //     const chars = "abcdefghijklmnopqrstuvwxyz";
 //     let salt = "";
@@ -29,4 +23,12 @@ class Bcrypt {
     };
 }
 
+// class Crypto {
+//     generateRandomString = () => {};
+//     hashFunction = (input) => {
+//         const hash = crypto.SHA256(input);
+//         const hashString = hash.toString(crypto.enc.Hex);
+//         return hashString;
+//     };
+// }
 export const hasher = new Bcrypt();
