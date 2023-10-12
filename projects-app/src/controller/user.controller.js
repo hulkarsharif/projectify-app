@@ -1,4 +1,5 @@
 import { userService } from "../services/user.service.js";
+import signature from "cookie-signature";
 class UserController {
     signUp = async (req, res) => {
         const { body } = req;
@@ -29,9 +30,16 @@ class UserController {
         };
 
         try {
-            await userService.login(input);
-            res.status(200).json({
-                message: "Success"
+            const sessionId = await userService.login(input);
+            const signedSessionId =
+                "s:" + signature.sign(sessionId, process.env.COOKIE_SECRET);
+            console.log(signedSessionId);
+            console.log(sessionId);
+
+            res.cookie("sessionId", signedSessionId, {
+                maxAge: 10000,
+                httpOnly: true,
+                secure: true
             });
         } catch (error) {
             let statusCode = 500;
@@ -43,27 +51,6 @@ class UserController {
             });
         }
     };
-
-    // update = async (req, res) => {
-    //     const allowedFields = ["firstName", "lastName", "bio"];
-    //     const { body, params } = req;
-    //     // if (!params.id) {
-    //     //     res.status(400).json({ message: "Missing user id" });
-    //     // }
-
-    //     const input = {};
-    //     allowedFields.forEach((field) => {
-    //         if (body[field]) {
-    //             input[field] = body[field];
-    //         }
-    //     });
-    //     try {
-    //         await userService.update(input, params.id);
-    //         res.status(204).send();
-    //     } catch (error) {
-    //         res.status(500).json({ message: error });
-    //     }
-    // };
 
     activate = async (req, res) => {
         const {
