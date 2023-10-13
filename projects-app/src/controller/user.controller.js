@@ -1,16 +1,14 @@
 import { userService } from "../services/user.service.js";
-import signature from "cookie-signature";
+import jwt from "jsonwebtoken";
 class UserController {
     signUp = async (req, res) => {
         const { body } = req;
-
         const input = {
             email: body.email,
-            preferredFirstName: body.preferredFirstName,
+            preferredFirstName: body.preferredName,
             firstName: body.firstName,
             lastName: body.lastName,
-            password: body.password,
-            bio: body.bio
+            password: body.password
         };
         try {
             await userService.signUp(input);
@@ -18,28 +16,22 @@ class UserController {
                 message: "Success"
             });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            res.status(500).json({
+                message: error.message
+            });
         }
     };
     login = async (req, res) => {
         const { body } = req;
-
         const input = {
             email: body.email,
             password: body.password
         };
 
         try {
-            const sessionId = await userService.login(input);
-            const signedSessionId =
-                "s:" + signature.sign(sessionId, process.env.COOKIE_SECRET);
-            console.log(signedSessionId);
-            console.log(sessionId);
-
-            res.cookie("sessionId", signedSessionId, {
-                maxAge: 10000,
-                httpOnly: true,
-                secure: true
+            const jwt = await userService.login(input);
+            res.status(200).json({
+                token: jwt
             });
         } catch (error) {
             let statusCode = 500;
@@ -47,27 +39,22 @@ class UserController {
                 statusCode = 401;
             }
             res.status(statusCode).json({
-                message: error.message
+                error: error.message
             });
         }
     };
-
     activate = async (req, res) => {
         const {
             query: { activationToken }
         } = req;
-
         if (!activationToken) {
             res.status(400).json({
                 message: "Activation Token is missing"
             });
-
             return;
         }
-
         try {
             await userService.activate(activationToken);
-
             res.status(200).json({
                 message: "Success"
             });
@@ -88,7 +75,9 @@ class UserController {
                 message: "Password reset email has been sent"
             });
         } catch (error) {
-            res.status(500).json({ message: error.message });
+            res.status(500).json({
+                message: error.message
+            });
         }
     };
     resetPassword = async (req, res) => {
@@ -102,7 +91,6 @@ class UserController {
             });
             return;
         }
-
         if (password !== passwordConfirm) {
             res.status(400).json({
                 message: "Password and Password Confirm does not match"
@@ -120,7 +108,6 @@ class UserController {
                 message: "Invalid Token"
             });
         }
-
         try {
             await userService.resetPassword(token, password);
             res.status(200).json({
@@ -132,6 +119,33 @@ class UserController {
             });
         }
     };
-}
 
+    getMe = async (req, res) => {
+        const { userId } = req;
+
+        try {
+            const me = await userService.getMe(userId);
+
+            res.status(200).json({
+                data: me
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: error.message
+            });
+        }
+    };
+
+    logout = async (req, res) => {
+        try {
+            res.status(200).send({
+                token: ""
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: error.message
+            });
+        }
+    };
+}
 export const userController = new UserController();

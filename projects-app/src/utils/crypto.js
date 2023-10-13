@@ -1,27 +1,4 @@
-import bcryptjs from "bcryptjs";
 import cryptojs from "crypto-js";
-
-// export const generateSalt = () => {
-//     const chars = "abcdefghijklmnopqrstuvwxyz";
-//     let salt = "";
-//     for (let i = 0; i < 10; i++) {
-//         const randomIdx = Math.floor(Math.random() * 26);
-//         salt += chars[randomIdx];
-//     }
-//     return salt;
-// };
-
-class Bcrypt {
-    hash = async (password) => {
-        const salt = await bcryptjs.genSalt(10);
-        const hash = await bcryptjs.hash(password, salt);
-        return hash;
-    };
-
-    compare = async (password, hash) => {
-        return await bcryptjs.compare(password, hash);
-    };
-}
 
 class Crypto {
     generateRandomString = () => {
@@ -50,6 +27,6 @@ class Crypto {
         return hashedToken === this.hash(token);
     }
 }
-export const bcrypt = new Bcrypt();
 
 export const crypto = new Crypto();
+// console.log(crypto.createToken());
