@@ -4,6 +4,7 @@ import { mailer } from "../utils/mailer.js";
 import { bcrypt } from "../utils/bcrypt.js";
 import { date } from "../utils/date.js";
 import jwt from "jsonwebtoken";
+import { v4 as uuid } from "uuid";
 
 class UserService {
     signUp = async (input) => {
@@ -20,7 +21,7 @@ class UserService {
             });
             await mailer.sendActivationMail(input.email, activationToken);
         } catch (error) {
-            throw new Error(error);
+            throw error;
         }
     };
     login = async (input) => {
@@ -190,6 +191,32 @@ class UserService {
                 throw new Error("User not found");
             }
             return user;
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    createTask = async (userId, input) => {
+        const id = uuid();
+        const task = {
+            ...input,
+            status: "TODO",
+            id
+        };
+
+        try {
+            await prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    tasks: {
+                        push: task
+                    }
+                }
+            });
+
+            return task;
         } catch (error) {
             throw error;
         }
