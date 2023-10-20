@@ -59,7 +59,6 @@ class UserController {
                 message: "Success"
             });
         } catch (error) {
-            console.log(error);
             res.status(500).json({
                 message: error.message
             });
@@ -167,6 +166,97 @@ class UserController {
             });
         } catch (error) {
             res.status(500).json({
+                message: error.message
+            });
+        }
+    };
+
+    getTasks = async (req, res) => {
+        const { userId } = req;
+
+        try {
+            const tasks = await userService.getTasks(userId);
+
+            res.status(200).json({
+                data: tasks
+            });
+        } catch (error) {
+            res.status(500).json({
+                message: error.message
+            });
+        }
+    };
+
+    getTask = async (req, res) => {
+        const { userId, params } = req;
+
+        try {
+            const task = await userService.getTask(userId, params.taskId);
+
+            res.status(200).json({
+                data: task
+            });
+        } catch (error) {
+            let status = 500;
+            if (error.message === "Task not found") {
+                status = 404;
+            }
+            res.status(status).json({
+                message: error.message
+            });
+        }
+    };
+
+    deleteTask = async (req, res) => {
+        const { userId, params } = req;
+
+        try {
+            await userService.deleteTask(userId, params.taskId);
+            res.status(204).send();
+        } catch (error) {
+            let status = 500;
+            if (error.message === "Task not found") {
+                status = 404;
+            }
+
+            res.status(status).json({
+                message: error.message
+            });
+        }
+    };
+
+    updateTask = async (req, res) => {
+        const { userId, params, body } = req;
+
+        const input = {};
+        if (body.status) {
+            input.status = body.status;
+        }
+        if (body.title) {
+            input.title = body.title;
+        }
+        if (body.description) {
+            input.description = body.description;
+        }
+
+        if (!Object.keys(input).length) {
+            res.status(400).json({
+                message: "Update data not provided"
+            });
+
+            return;
+        }
+
+        try {
+            await userService.updateTask(userId, params.taskId, input);
+            res.status(204).send();
+        } catch (error) {
+            let status = 500;
+            if (error.message === "Task not found") {
+                status = 404;
+            }
+
+            res.status(status).json({
                 message: error.message
             });
         }
