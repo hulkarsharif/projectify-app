@@ -297,7 +297,6 @@ class UserService {
     };
 
     updateTask = async (userId, taskId, input) => {
-        console.log("helo");
         try {
             const user = await prisma.user.findUnique({
                 where: {
