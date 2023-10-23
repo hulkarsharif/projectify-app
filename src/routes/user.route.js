@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { CookieMiddleware } from "../middlewares/cookie.middleware.js";
 import { userController } from "../controller/user.controller.js";
 import { userMiddleware } from "../middlewares/user.middleware.js";
 
