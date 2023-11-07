@@ -11,8 +11,8 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 4080;
 
-app.use("/users", userRouter);
-app.use("/projects", projectRouter);
+app.use("/todos", todosRouter);
+
 app.use(GlobalError.handle);
 
 app.listen(PORT, () => {
