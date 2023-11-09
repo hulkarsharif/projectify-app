@@ -22,7 +22,7 @@ class Mailer {
 
     sendActivationMail = async (emailAddress, token) => {
         try {
-            this.send({
+            await this.send({
                 to: emailAddress,
                 subject: "Projects App |Activate your Account",
                 html: `<a href="http://localhost:4080/users/activate?activationToken=${token}">Verify your email</a>`
@@ -37,6 +37,18 @@ class Mailer {
                 to: emailAddress,
                 subject: "Projects App | Reset Rassword",
                 html: `<a href="http://localhost:3000/reset-password/passwordResetToken=${token}">Reset your password</a>`
+            });
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    sendCreatePasswordInviteToTeamMember = async (emailAddress, token) => {
+        try {
+            await this.send({
+                to: emailAddress,
+                subject: "Projectify App | Welcome to the team",
+                html: `<a href="http://localhost:3000/team-member/create-password?inviteToken=${token}">Click to create a password</a>`
             });
         } catch (error) {
             throw error;

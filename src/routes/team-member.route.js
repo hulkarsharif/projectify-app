@@ -10,4 +10,6 @@ teamMemberRouter.post(
     teamMemberController.create
 );
 
+teamMemberRouter.patch("/create-password", teamMemberController.createPassword);
+
 export { teamMemberRouter };

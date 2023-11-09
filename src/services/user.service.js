@@ -22,6 +22,7 @@ class UserService {
                 id: true
             }
         });
+
         await prisma.company.create({
             data: {
                 ...companyInput,
@@ -42,10 +43,13 @@ class UserService {
                 password: true
             }
         });
+
         if (!user) throw new CustomError("User does not exist", 404);
+
         if (user.status === "INACTIVE") {
             const activationToken = crypto.createToken();
             const hashedActivationToken = crypto.hash(activationToken);
+
             await prisma.user.update({
                 where: {
                     id: user.id
@@ -54,12 +58,15 @@ class UserService {
                     activationToken: hashedActivationToken
                 }
             });
+
             await mailer.sendActivationMail(input.email, activationToken);
+
             throw new CustomError(
                 "We just sent you activation email. Follow instructions",
                 400
             );
         }
+
         const isPasswordMatches = await bcrypt.compare(
             input.password,
             user.password
@@ -92,9 +99,14 @@ class UserService {
                 activationToken: true
             }
         });
+
         if (!user) {
-            throw new CustomError("Invalid Token", 401);
+            throw new CustomError(
+                "User does not exist with with provided Activation Token",
+                404
+            );
         }
+
         await prisma.user.update({
             where: {
                 id: user.id
@@ -105,6 +117,7 @@ class UserService {
             }
         });
     };
+
     forgotPassword = async (email) => {
         const user = await prisma.user.findFirst({
             where: {
@@ -114,14 +127,17 @@ class UserService {
                 id: true
             }
         });
+
         if (!user) {
             throw new CustomError(
-                "We could not find a user with the email you provided",
+                "User does not exist with provided email",
                 404
             );
         }
+
         const passwordResetToken = crypto.createToken();
         const hashedPasswordResetToken = crypto.hash(passwordResetToken);
+
         await prisma.user.update({
             where: {
                 id: user.id
@@ -131,6 +147,7 @@ class UserService {
                 passwordResetTokenExpirationDate: date.addMinutes(10)
             }
         });
+
         await mailer.sendPasswordResetToken(email, passwordResetToken);
     };
 
@@ -146,15 +163,25 @@ class UserService {
                 passwordResetTokenExpirationDate: true
             }
         });
+
         if (!user) {
-            throw new CustomError("Invalid Token", 400);
+            throw new CustomError(
+                "User does not exist with  provided Password Reset Token",
+                404
+            );
         }
+
         const currentTime = new Date();
         const tokenExpDate = new Date(user.passwordResetTokenExpirationDate);
+
         if (tokenExpDate < currentTime) {
             // Token Expired;
-            throw new CustomError("Reset Token Expired", 410);
+            throw new CustomError(
+                "Password Reset Token Expired: Request a new one",
+                400
+            );
         }
+
         await prisma.user.update({
             where: {
                 id: user.id
@@ -177,28 +204,23 @@ class UserService {
                 lastName: true,
                 preferredFirstName: true,
                 email: true,
-                id: true,
-
-                company: {
-                    select: {
-                        name: true,
-                        position: true
-                    }
-                }
+                id: true
             }
         });
+
         if (!user) {
-            throw new CustomError("User not found", 404);
+            throw new Error("User does not exist anymore, 404");
         }
-        // const company = await prisma.company.findFirst({
-        //     where: { userId: user.id },
-        //     select: {
-        //         name: true,
-        //         position: true
-        //     }
-        // });
-        // return { ...user, company };
-        return user;
+
+        const company = await prisma.company.findFirst({
+            where: { userId: user.id },
+            select: {
+                name: true,
+                position: true
+            }
+        });
+
+        return { ...user, company };
     };
 
     createTask = async (userId, input) => {
@@ -250,7 +272,7 @@ class UserService {
 
         const task = user.tasks.find((task) => task.id === taskId);
         if (!task) {
-            throw new CustomError("Task not found", 400);
+            throw new CustomError("Task not found", 404);
         }
 
         return task;
@@ -268,10 +290,9 @@ class UserService {
         });
 
         const tasksToKeep = user.tasks.filter((task) => task.id !== taskId);
-        console.log(tasksToKeep);
 
         if (tasksToKeep.length === user.tasks.length) {
-            throw new CustomError("Task not found", 404);
+            throw new CustomError("Task does not exist", 404);
         }
 
         await prisma.user.update({
@@ -308,7 +329,7 @@ class UserService {
         });
 
         if (!taskToUpdate) {
-            throw new CustomError("Task not found", 404);
+            throw new CustomError("Task does not exist", 404);
         }
 
         const updatedTask = {
@@ -328,4 +349,4 @@ class UserService {
     };
 }
 
-export let userService = new UserService();
+export const userService = new UserService();
