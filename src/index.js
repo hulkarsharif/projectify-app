@@ -1,5 +1,5 @@
 import express from "express";
-import { userRouter } from "./routes/user.route.js";
+import { adminRouter } from "./routes/admin.route.js";
 import dotenv from "dotenv";
 import { GlobalError } from "./middlewares/global-error.middleware.js";
 import { projectRouter } from "./routes/project.route.js";
@@ -12,7 +12,7 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 4080;
 
-app.use("/users", userRouter);
+app.use("/admin", adminRouter);
 app.use("/projects", projectRouter);
 app.use("/team-members", teamMemberRouter);
 app.use(GlobalError.handle);
