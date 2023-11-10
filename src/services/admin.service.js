@@ -44,7 +44,7 @@ class AdminService {
             }
         });
 
-        if (!admin) throw new CustomError("admin does not exist", 404);
+        if (!admin) throw new CustomError("Admin does not exist", 404);
 
         if (admin.status === "INACTIVE") {
             const activationToken = crypto.createToken();
@@ -102,7 +102,7 @@ class AdminService {
 
         if (!admin) {
             throw new CustomError(
-                "admin does not exist with with provided Activation Token",
+                "Admin does not exist with with provided Activation Token",
                 404
             );
         }
@@ -130,7 +130,7 @@ class AdminService {
 
         if (!admin) {
             throw new CustomError(
-                "admin does not exist with provided email",
+                "Admin does not exist with provided email",
                 404
             );
         }
@@ -166,7 +166,7 @@ class AdminService {
 
         if (!admin) {
             throw new CustomError(
-                "admin does not exist with  provided Password Reset Token",
+                "Admin does not exist with  provided Password Reset Token",
                 404
             );
         }
@@ -209,7 +209,7 @@ class AdminService {
         });
 
         if (!admin) {
-            throw new Error("admin does not exist anymore, 404");
+            throw new Error("Admin does not exist anymore, 404");
         }
 
         const company = await prisma.company.findFirst({

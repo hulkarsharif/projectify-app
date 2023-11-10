@@ -4,7 +4,7 @@ import { teamMemberService } from "../services/team-member.service.js";
 
 class TeamMemberController {
     create = catchAsync(async (req, res) => {
-        const { body, AdminId } = req;
+        const { body, adminId } = req;
 
         const input = {
             firstName: body.firstName,
@@ -19,7 +19,7 @@ class TeamMemberController {
             );
         }
 
-        await teamMemberService.create(AdminId, input);
+        await teamMemberService.create(adminId, input);
         res.status(201).send();
     });
 

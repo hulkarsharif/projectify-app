@@ -3,7 +3,7 @@ export const catchAsync = (routeHandler) => {
         try {
             await routeHandler(req, res, next);
         } catch (error) {
-            console.log(error);
+            // console.log(error);
             next(error);
         }
     };
