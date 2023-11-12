@@ -25,7 +25,7 @@ class Mailer {
             await this.send({
                 to: emailAddress,
                 subject: "Projects App |Activate your Account",
-                html: `<a href="http://localhost:4080/admin/activate?activationToken=${token}">Verify your email</a>`
+                html: `<a href="http://localhost:4080/admins/activate?activationToken=${token}">Verify your email</a>`
             });
         } catch (error) {
             throw error;
