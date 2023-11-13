@@ -14,7 +14,7 @@ class TeamMemberController {
 
         if (!input.firstName || !input.lastName || !input.email) {
             throw new CustomError(
-                "All fields are required: First name, Last Name, Email",
+                "All fields are required: first name, last name, email and position",
                 400
             );
         }
@@ -26,16 +26,16 @@ class TeamMemberController {
     createPassword = catchAsync(async (req, res) => {
         const {
             query: { inviteToken },
-            body: { password, passwordConfirm }
+            body: { password, passwordConfirm, email }
         } = req;
 
         if (!inviteToken) {
             throw new CustomError("Invite Token is missing", 400);
         }
 
-        if (!password || !passwordConfirm) {
+        if (!password || !passwordConfirm || !email) {
             throw new CustomError(
-                "All fields are required: Password and Password Confirmation",
+                "All fields are required: Password and Password Confirmation and email",
                 400
             );
         }
@@ -47,7 +47,7 @@ class TeamMemberController {
             );
         }
 
-        await teamMemberService.createPassword(inviteToken, password);
+        await teamMemberService.createPassword(inviteToken, password, email);
 
         res.status(200).json({
             message: "You successfully created a password. Now, you can log in"
