@@ -20,7 +20,7 @@ class TeamMemberController {
             !input.position
         ) {
             throw new CustomError(
-                "All fields are required: first name, last name, email and position",
+                "All fields are required: First name, Last name, Email, Position",
                 400
             );
         }
@@ -68,6 +68,20 @@ class TeamMemberController {
         res.status(200).json({
             data: teamMembers
         });
+    });
+    deactivate = catchAsync(async (req, res) => {
+        const { adminId, body } = req;
+        await teamMemberService.changeStatus(adminId, body.teamMemberId);
+        res.status(204).send();
+    });
+    reactivate = catchAsync(async (req, res) => {
+        const { adminId, body } = req;
+        await teamMemberService.changeStatus(
+            adminId,
+            body.teamMemberId,
+            "ACTIVE"
+        );
+        res.status(204).send();
     });
 }
 
