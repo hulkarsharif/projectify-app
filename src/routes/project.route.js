@@ -4,6 +4,24 @@ import { projectController } from "../controller/project.controller.js";
 
 const projectRouter = Router();
 
+projectRouter.post(
+    "/contributors/add",
+    authMiddleware.authenticate,
+    projectController.addContributor
+);
+
+projectRouter.patch(
+    "/contributors/deactivate",
+    authMiddleware.authenticate,
+    projectController.deactivateContributor
+);
+
+projectRouter.patch(
+    "/contributors/reactivate",
+    authMiddleware.authenticate,
+    projectController.reactivateContributor
+);
+
 projectRouter.post("/", authMiddleware.authenticate, projectController.create);
 projectRouter.get(
     "/:id",
