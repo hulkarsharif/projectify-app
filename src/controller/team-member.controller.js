@@ -83,6 +83,16 @@ class TeamMemberController {
         );
         res.status(204).send();
     });
+
+    // login = catchAsync(async (req, res) => {
+    //     const {
+    //         body: { email, password }
+    //     } = req;
+
+    //     if (!email || !password) {
+    //         throw new CustomError("All fields required: email and password");
+    //     }
+    // });
 }
 
 export const teamMemberController = new TeamMemberController();

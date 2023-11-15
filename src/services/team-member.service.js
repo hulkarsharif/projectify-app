@@ -99,6 +99,38 @@ class TeamMemberService {
             );
         }
     };
+
+    login = async (email, password) => {
+        const user = await prisma.teamMember.findUnique({
+            where: {
+                email: email
+            },
+            select: {
+                id: true,
+                status: true,
+                password: true
+            }
+        });
+        if (!teamMember) throw new CustomError("User does not exist", 404);
+
+        if (teamMember.status === "INACTIVE" && !teamMember.password) {
+            const inviteToken = crypto.createToken();
+            const hashedInviteToken = crypto.hash(inviteToken);
+
+            await prisma.teamMember.update({
+                where: {
+                    email
+                },
+                data: {
+                    inviteToken: hashedInviteToken
+                }
+            });
+            await mailer.sendCreatePasswordInviteToTeamMember(
+                email,
+                inviteToken
+            );
+        }
+    };
 }
 
 export const teamMemberService = new TeamMemberService();
