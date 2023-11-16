@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { CustomError } from "../utils/custom-error.js";
 class AuthMiddleware {
-    authenticate = (req, res, next) => {
+    authenticate = (req, _, next) => {
         const { headers } = req;
         if (!headers.authorization) {
             throw new CustomError("You are not logged in. Please, log in", 401);
