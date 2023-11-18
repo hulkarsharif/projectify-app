@@ -7,30 +7,18 @@ class StoryController {
             body: { title, description, point, due, assigneeId, projectId }
         } = req;
 
-        const input = {
-            title: body.title,
-            description: body.description,
-            point: body.point,
-            due: body.due,
-            assigneeId: body.assigneeId,
-            projectId: body.projectId
-        };
-
         if (
-            !input.title ||
-            !input.description ||
-            !input.point ||
-            !input.due ||
-            !input.assigneeId ||
-            !input.projectId
+            !title ||
+            !description ||
+            !point ||
+            !due ||
+            !assigneeId ||
+            !projectId
         ) {
-            throw new CustomError(
-                "All fields are required: First name, Last name, Email, Position",
-                400
-            );
+            throw new CustomError("All fields are required", 400);
         }
-        await storyService.create(body.input);
-        res.status(201).send();
+        const story = await storyService.create(assigneeId, body);
+        res.status(201).json({ data: story });
     });
 }
 
