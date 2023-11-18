@@ -23,6 +23,7 @@ class AdminController {
             message: "Success"
         });
     });
+
     login = catchAsync(async (req, res) => {
         const { body } = req;
         const input = {
@@ -40,10 +41,13 @@ class AdminController {
         const {
             query: { activationToken }
         } = req;
-        if (!activationToken)
+
+        if (!activationToken) {
             throw new CustomError("Activation Token is missing", 400);
+        }
 
         await adminService.activate(activationToken);
+
         res.status(200).json({
             message: "Success"
         });
@@ -55,6 +59,7 @@ class AdminController {
         } = req;
 
         await adminService.forgotPassword(email);
+
         res.status(200).json({
             message: "Password reset email has been sent"
         });
@@ -65,24 +70,27 @@ class AdminController {
             body: { password, passwordConfirm },
             headers
         } = req;
-        if (!password || !passwordConfirm)
+        if (!password || !passwordConfirm) {
             throw new CustomError(
                 "Password and Password Confirm is required",
                 400
             );
+        }
 
-        if (password !== passwordConfirm)
+        if (password !== passwordConfirm) {
             throw new CustomError(
                 "Password and Password Confirm does not match",
                 400
             );
-
-        if (!headers.authorization)
+        }
+        if (!headers.authorization) {
             throw new CustomError("Reset Token is missing", 400);
+        }
 
         const [bearer, token] = headers.authorization.split(" ");
-        if (bearer !== "Bearer" || !token)
+        if (bearer !== "Bearer" || !token) {
             throw new CustomError("Invalid Token", 400);
+        }
 
         await adminService.resetPassword(token, password);
         res.status(200).json({
@@ -100,11 +108,11 @@ class AdminController {
         });
     });
 
-    logout = catchAsync(async (req, res) => {
-        res.status(200).send({
-            token: ""
-        });
-    });
+    // logout = catchAsync(async (req, res) => {
+    //     res.status(200).send({
+    //         token: ""
+    //     });
+    // });
 
     createTask = catchAsync(async (req, res) => {
         const { adminId, body } = req;
@@ -126,6 +134,12 @@ class AdminController {
     getTasks = catchAsync(async (req, res) => {
         const { adminId } = req;
 
+        if (!adminId) {
+            throw new CustomError(
+                "Forbidden: You are not authorized to perform this action",
+                403
+            );
+        }
         const tasks = await adminService.getTasks(adminId);
 
         res.status(200).json({
