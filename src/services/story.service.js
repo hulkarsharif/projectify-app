@@ -9,6 +9,7 @@ class StoryService {
         });
         return story;
     };
+
     getOne = async (id, adminId) => {
         const story = await prisma.story.findUnique({
             where: {
