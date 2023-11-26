@@ -26,7 +26,7 @@ class ProjectService {
 
         if (project.adminId !== adminId) {
             throw new CustomError(
-                "Forbidden: This project does not belong to you!",
+                "Forbidden: You are not authorized to perform this action",
                 403
             );
         }

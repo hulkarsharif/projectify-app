@@ -41,7 +41,6 @@ projectRouter.patch(
     "/:id",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
-
     projectController.update
 );
 projectRouter.get(

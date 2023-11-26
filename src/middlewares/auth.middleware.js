@@ -1,5 +1,10 @@
 import jwt from "jsonwebtoken";
 import { CustomError } from "../utils/custom-error.js";
+import { catchAsync } from "../utils/catch-async.js";
+import { prisma } from "../prisma/index.js";
+import { storyService } from "../services/story.service.js";
+import { ERROR_MESSAGES } from "../utils/const.js";
+
 class AuthMiddleware {
     authenticate = (req, _, next) => {
         const { headers } = req;
@@ -27,18 +32,74 @@ class AuthMiddleware {
             throw new CustomError(error.message, 500);
         }
     };
+
     isAdmin = (req, _, next) => {
         const { adminId } = req;
 
         if (!adminId) {
             throw new CustomError(
-                "Forbidden: You are not authorized to perform this action",
+                "Forbidden: Only Admins can perform this action",
                 403
             );
         }
 
         next();
     };
+
+    verifyReadUpdateDeleteStoryPermissions = catchAsync(
+        async (req, _, next) => {
+            const {
+                adminId,
+                teamMember,
+                params: { id }
+            } = req;
+
+            const story = storyService.getOne(id);
+            const { projectId } = story;
+
+            const project = await prisma.project.findUnique({
+                where: {
+                    id: projectId
+                }
+            });
+
+            if (adminId) {
+                if (project.adminId !== adminId) {
+                    throw new CustomError(
+                        "Forbidden: You are not authorized to perform this action",
+                        403
+                    );
+                }
+                req.story = story;
+                next();
+            }
+
+            if (teamMember) {
+                const teamMemberProject =
+                    await prisma.teamMemberProject.findFirst({
+                        where: {
+                            teamMemberId: teamMember.id,
+                            projectId: projectId
+                        }
+                    });
+
+                if (
+                    !teamMemberProject ||
+                    (teamMemberProject &&
+                        teamMemberProject.status === "INACTIVE") ||
+                    project.adminId !== teamMember.adminId
+                ) {
+                    throw new CustomError(
+                        "This story belongs to the project you do not have an access",
+                        403
+                    );
+                }
+
+                req.story = story;
+                next();
+            }
+        }
+    );
 }
 
 export const authMiddleware = new AuthMiddleware();
