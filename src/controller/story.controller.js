@@ -38,15 +38,17 @@ class StoryController {
     });
 
     getAll = catchAsync(async (req, res) => {
-        const { projectId } = req;
-        const stories = await storyService.getAll(projectId);
+        const { params, adminId } = req;
+        const stories = await storyService.getAll(params.projectId, adminId);
         res.status(200).json({
             data: stories
         });
     });
+
     update = catchAsync(async (req, res) => {
         const { body, params, assigneeId } = req;
         const update = {};
+
         if (body.title) {
             update.title = body.title;
         }
