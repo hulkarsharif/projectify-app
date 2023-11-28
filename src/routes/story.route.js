@@ -31,5 +31,11 @@ storyRouter.patch(
     authMiddleware.verifyReadUpdateDeleteStoryPermissions,
     storyController.update
 );
+storyRouter.delete(
+    "/:id",
+    authMiddleware.authenticate,
+    authMiddleware.verifyReadUpdateDeleteStoryPermissions,
+    storyController.deleteOne
+);
 
 export { storyRouter };
