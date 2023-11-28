@@ -28,7 +28,7 @@ storyRouter.get(
 storyRouter.patch(
     "/:id",
     authMiddleware.authenticate,
-    authMiddleware.verifyReadUpdateDeleteStoryPermissions,
+    authMiddleware.isAdmin,
     storyController.update
 );
 

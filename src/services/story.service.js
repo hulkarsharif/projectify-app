@@ -30,14 +30,37 @@ class StoryService {
 
         return stories;
     };
-    update = async (id, assigneeId, update) => {
+    update = async (id, update) => {
+        const story = await prisma.story.update({
+            where: {
+                id: id
+            }
+        });
+        if (!story) {
+            throw new CustomError("Story does not exist", 404);
+        }
         await prisma.story.update({
             where: {
-                id: id,
-                assigneeId: assigneeId
+                id: id
             },
             data: {
                 ...update
+            }
+        });
+    };
+
+    deleteOne = async (id) => {
+        const story = await prisma.story.findUnique({
+            where: {
+                id: id
+            }
+        });
+        if (!story) {
+            throw new CustomError("Story does not exist", 404);
+        }
+        await prisma.story.delete({
+            where: {
+                id: id
             }
         });
     };
