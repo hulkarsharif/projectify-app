@@ -34,4 +34,12 @@ storyRouter.patch(
     storyController.update
 );
 
+storyRouter.delete(
+    "/storyId",
+    authMiddleware.authenticate,
+    authMiddleware.isAdmin,
+    authMiddleware.verifyReadUpdateDeleteStoryAndSubtaskPermissions,
+    storyController.deleteOne
+);
+
 export { storyRouter };
