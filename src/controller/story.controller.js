@@ -39,7 +39,7 @@ class StoryController {
 
     getAll = catchAsync(async (req, res) => {
         const { params, adminId } = req;
-        const stories = await storyService.getAll(params.projectId, adminId);
+        const stories = await storyService.getAll(params.id, adminId);
         res.status(200).json({
             data: stories
         });
@@ -61,13 +61,19 @@ class StoryController {
         if (!update.title && !update.description && !update.point) {
             throw new CustomError("No update data provided", 400);
         }
+
         await storyService.update(params.storyId, update);
+       
         res.status(204).send();
     });
 
     deleteOne = catchAsync(async (req, res) => {
         const { params } = req;
+
         await storyService.deleteOne(params.storyId);
+
+
+   
         res.status(204).send();
     });
 }
