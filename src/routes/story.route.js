@@ -33,13 +33,6 @@ storyRouter.patch(
     storyController.archive
 );
 
-storyRouter.delete(
-    "/:id",
-    authMiddleware.authenticate,
-    authMiddleware.verifyReadUpdateDeleteStoryPermissions,
-    storyController.deleteOne
-);
-
 storyRouter.patch(
     "/:id/delete",
     authMiddleware.authenticate,
