@@ -26,7 +26,9 @@ class TeamMemberController {
         }
 
         await teamMemberService.create(adminId, input);
-        res.status(201).send();
+        res.status(201).send({
+            data: `Team member with${input.email}has been created`
+        });
     });
 
     createPassword = catchAsync(async (req, res) => {
@@ -69,13 +71,10 @@ class TeamMemberController {
             data: teamMembers
         });
     });
+
     deactivate = catchAsync(async (req, res) => {
         const { adminId, body } = req;
-        await teamMemberService.changeStatus(
-            adminId,
-            body.teamMemberId,
-            "INACTIVE"
-        );
+        await teamMemberService.changeStatus(adminId, body.teamMemberId);
         res.status(204).send();
     });
     reactivate = catchAsync(async (req, res) => {

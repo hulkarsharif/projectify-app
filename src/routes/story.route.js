@@ -11,31 +11,29 @@ storyRouter.post(
     authMiddleware.verifyCreateStoryPermissions,
     storyController.create
 );
-
 storyRouter.get(
-    "/:storyId",
+    "/:id",
     authMiddleware.authenticate,
     authMiddleware.verifyReadUpdateDeleteStoryAndSubtaskPermissions,
     storyController.getOne
 );
-
-storyRouter.get(
-    "/projectStories/:projectId",
-    authMiddleware.authenticate,
-    authMiddleware.isAdmin,
-    storyController.getAll
-);
-
 storyRouter.patch(
-    "/:storyId",
+    "/:id",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     authMiddleware.verifyReadUpdateDeleteStoryAndSubtaskPermissions,
     storyController.update
 );
+storyRouter.patch(
+    "/:id/archive",
+    authMiddleware.authenticate,
+    authMiddleware.isAdmin,
+    authMiddleware.verifyReadUpdateDeleteStoryAndSubtaskPermissions,
+    storyController.archive
+);
 
-storyRouter.delete(
-    "/storyId",
+storyRouter.patch(
+    "/:id/delete",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     authMiddleware.verifyReadUpdateDeleteStoryAndSubtaskPermissions,
