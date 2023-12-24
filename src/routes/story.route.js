@@ -24,12 +24,20 @@ storyRouter.patch(
     authMiddleware.verifyReadUpdateDeleteStoryAndSubtaskPermissions,
     storyController.update
 );
+
 storyRouter.patch(
     "/:id/archive",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     authMiddleware.verifyReadUpdateDeleteStoryAndSubtaskPermissions,
     storyController.archive
+);
+
+storyRouter.delete(
+    "/:id",
+    authMiddleware.authenticate,
+    authMiddleware.verifyReadUpdateDeleteStoryPermissions,
+    storyController.deleteOne
 );
 
 storyRouter.patch(

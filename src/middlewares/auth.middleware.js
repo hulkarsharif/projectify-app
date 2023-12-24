@@ -50,6 +50,7 @@ class AuthMiddleware {
             adminId,
             body: { assigneeId, projectId }
         } = req;
+
         if (adminId) {
             const project = await prisma.project.findUnique({
                 where: {
