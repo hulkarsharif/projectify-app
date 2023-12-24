@@ -15,11 +15,7 @@ adminRouter.get(
     authMiddleware.isAdmin,
     adminController.getMe
 );
-// adminRouter.delete(
-//     "/logout",
-//     authMiddleware.authenticate,
-//     adminController.logout
-// );
+
 adminRouter.patch(
     "/me/tasks",
     authMiddleware.authenticate,
@@ -37,6 +33,7 @@ adminRouter.get(
 adminRouter.get(
     "/me/tasks/:taskId",
     authMiddleware.authenticate,
+    authMiddleware.isAdmin,
     adminController.getTask
 );
 
