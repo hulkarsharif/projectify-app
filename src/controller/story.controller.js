@@ -1,6 +1,7 @@
 import { catchAsync } from "../utils/catch-async.js";
 import { CustomError } from "../utils/custom-error.js";
 import { storyService } from "../services/story.service.js";
+
 class StoryController {
     create = catchAsync(async (req, res) => {
         const {
@@ -8,10 +9,7 @@ class StoryController {
             adminId
         } = req;
         if (!title || !projectId) {
-            throw new CustomError(
-                "All fields are required: Title, Description and Due date!",
-                400
-            );
+            throw new CustomError("Title and project are required", 400);
         }
         const input = {
             title,
@@ -28,10 +26,7 @@ class StoryController {
     });
 
     getOne = catchAsync(async (req, res) => {
-        const {
-            params: { id }
-        } = req;
-        const story = await storyService.getOne(params.storyId);
+        const { story } = req;
         res.status(200).json({
             data: story
         });
@@ -64,6 +59,11 @@ class StoryController {
 
         await storyService.update(params.storyId, update);
        
+        res.status(204).send();
+    });
+    archive = catchAsync(async (req, res) => {
+        const { params } = req;
+        await storyService.changeStatus(params.id, "ARCHIVED");
         res.status(204).send();
     });
 

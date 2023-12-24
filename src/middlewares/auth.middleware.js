@@ -3,7 +3,6 @@ import { CustomError } from "../utils/custom-error.js";
 import { catchAsync } from "../utils/catch-async.js";
 import { prisma } from "../prisma/index.js";
 import { storyService } from "../services/story.service.js";
-import { ERROR_MESSAGES } from "../utils/const.js";
 
 class AuthMiddleware {
     authenticate = (req, _, next) => {
@@ -72,7 +71,7 @@ class AuthMiddleware {
                 }
             });
             if (
-                teamMemberProject ||
+                !teamMemberProject ||
                 assigneeId !== teamMemberProject.teamMemberId ||
                 teamMemberProject.status === "INACTIVE"
             ) {
