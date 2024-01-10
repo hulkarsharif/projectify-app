@@ -58,7 +58,7 @@ class StoryController {
         }
 
         await storyService.update(params.storyId, update);
-       
+
         res.status(204).send();
     });
     archive = catchAsync(async (req, res) => {
@@ -72,8 +72,6 @@ class StoryController {
 
         await storyService.deleteOne(params.storyId);
 
-
-   
         res.status(204).send();
     });
 }

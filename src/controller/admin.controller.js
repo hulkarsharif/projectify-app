@@ -5,6 +5,7 @@ import { CustomError } from "../utils/custom-error.js";
 class AdminController {
     signUp = catchAsync(async (req, res) => {
         const { body } = req;
+        console.log(body);
 
         const adminInput = {
             email: body.email,
