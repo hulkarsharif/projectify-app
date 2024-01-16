@@ -154,7 +154,7 @@ class AdminService {
             }
         });
 
-        await mailer.sendPasswordResetToken(email, passwordResetToken);
+        await mailer.sendPasswordResetTokenAdmin(email, passwordResetToken);
     };
 
     resetPassword = async (token, password) => {
