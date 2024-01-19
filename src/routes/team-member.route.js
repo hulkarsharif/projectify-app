@@ -34,10 +34,11 @@ teamMemberRouter.patch(
 );
 
 teamMemberRouter.post("/login", teamMemberController.login);
-teamMemberRouter.patch(
-    "./forgot-password",
-    teamMemberController.forgotPassword
+teamMemberRouter.patch("/forgot-password", teamMemberController.forgotPassword);
+teamMemberRouter.patch("/reset-password", teamMemberController.resetPassword);
+teamMemberRouter.get(
+    "/me",
+    authMiddleware.authenticate,
+    teamMemberController.getMe
 );
-teamMemberRouter.patch("./reset-password", teamMemberController.resetPassword);
-
 export { teamMemberRouter };
