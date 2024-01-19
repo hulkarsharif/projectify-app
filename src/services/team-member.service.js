@@ -270,6 +270,7 @@ class TeamMemberService {
             }
         });
     };
+
     getMe = async (teamMember) => {
         const teamMemberData = await prisma.teamMember.findUnique({
             where: {
