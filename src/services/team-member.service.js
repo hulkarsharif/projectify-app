@@ -29,13 +29,14 @@ class TeamMemberService {
                 inviteToken: hashedInviteToken
             }
         });
+        console.log(teamMember);
+
         if (!teamMember) {
             throw new CustomError("Invalid Token", 400);
         }
         await prisma.teamMember.update({
             where: {
-                email: email,
-                inviteToken: hashedInviteToken
+                email: email
             },
             data: {
                 password: hashedPassword,
@@ -271,25 +272,27 @@ class TeamMemberService {
         });
     };
 
-    getMe = async (teamMember) => {
-        const teamMemberData = await prisma.teamMember.findUnique({
+    getMe = async (id) => {
+        const teamMember = await prisma.teamMember.findUnique({
             where: {
-                id: teamMember.id
+                id
             },
             select: {
                 firstName: true,
                 lastName: true,
                 email: true,
                 position: true,
-                id: true
+                status: true,
+                id: true,
+                adminId: true
             }
         });
 
-        if (!teamMember.id) {
-            throw new Error("Team Member does not exist anymore, 404");
+        if (!teamMember) {
+            throw new CustomError("Team Member does not exist, 404");
         }
 
-        return { ...teamMemberData, role: "teamMember" };
+        return { ...teamMember, role: "teamMember" };
     };
 }
 export const teamMemberService = new TeamMemberService();
