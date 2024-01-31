@@ -113,12 +113,6 @@ class AdminController {
         });
     });
 
-    // logout = catchAsync(async (req, res) => {
-    //     res.status(200).send({
-    //         token: ""
-    //     });
-    // });
-
     createTask = catchAsync(async (req, res) => {
         const { adminId, body } = req;
         const input = {
