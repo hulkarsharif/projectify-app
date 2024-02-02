@@ -27,7 +27,7 @@ class TeamMemberController {
 
         await teamMemberService.create(adminId, input);
         res.status(201).send({
-            data: `Team member with${input.email}has been created`
+            message: `Team member with ${input.email} has been created!`
         });
     });
 
@@ -40,6 +40,7 @@ class TeamMemberController {
             throw new CustomError("You are not logged in. Please, log in", 401);
         }
         const [prefix, token] = headers.authorization.split(" ");
+        console.log(prefix, token);
         if (!prefix || token) {
             throw new CustomError("Not Valid Token", 400);
         }
@@ -81,7 +82,11 @@ class TeamMemberController {
 
     deactivate = catchAsync(async (req, res) => {
         const { adminId, body } = req;
-        await teamMemberService.changeStatus(adminId, body.teamMemberId);
+        await teamMemberService.changeStatus(
+            adminId,
+            body.teamMemberId,
+            "INACTIVE"
+        );
         res.status(204).send();
     });
     reactivate = catchAsync(async (req, res) => {
@@ -105,9 +110,14 @@ class TeamMemberController {
                 400
             );
         }
-        const jwt = await teamMemberService.login(email, password);
+        const { token, projectIds, me } = await teamMemberService.login(
+            email,
+            password
+        );
         res.status(200).json({
-            token: jwt
+            token,
+            projectIds,
+            me
         });
     });
 

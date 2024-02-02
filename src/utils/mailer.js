@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-
 class Mailer {
     constructor() {
         this.transporter = nodemailer.createTransport({
@@ -24,36 +23,23 @@ class Mailer {
             throw error;
         }
     };
-
     sendActivationMail = async (emailAddress, token) => {
         try {
             await this.send({
                 to: emailAddress,
-                subject: "Projects App |Activate your Account",
+                subject: "Projectify App | Activate Your Account",
                 html: `<a href="${this.baseApiURL}/admins/activate?activationToken=${token}">Verify your email</a>`
             });
         } catch (error) {
             throw error;
         }
     };
-    sendPasswordResetTokenAdmin = async (emailAddress, token) => {
+    sendPasswordResetToken = async (emailAddress, token) => {
         try {
             this.send({
                 to: emailAddress,
-                subject: "Projects App | Reset Rassword",
+                subject: "Projectify App | Reset Password",
                 html: `<a href="${this.baseUiURL}/admin/reset-password?passwordResetToken=${token}">Reset Your Password</a>`
-            });
-        } catch (error) {
-            throw error;
-        }
-    };
-
-    sendCreatePasswordInviteToTeamMember = async (emailAddress, token) => {
-        try {
-            await this.send({
-                to: emailAddress,
-                subject: "Projectify App | Welcome to the team",
-                html: `<a href="${this.baseUiURL}/team-member/create-password?inviteToken=${token}">Click to create a password</a>`
             });
         } catch (error) {
             throw error;
@@ -70,6 +56,17 @@ class Mailer {
             throw error;
         }
     };
+    sendCreatePasswordInviteToTeamMember = async (emailAddress, token) => {
+        try {
+            await this.send({
+                to: emailAddress,
+                subject: "Projectify App | Welcome to the team",
+                html: `<a href="${this.baseUiURL}/team-member/create-password?inviteToken=${token}">Click to create a password</a>`
+            });
+        } catch (error) {
+            console.log(token);
+            throw error;
+        }
+    };
 }
-
 export const mailer = new Mailer();
