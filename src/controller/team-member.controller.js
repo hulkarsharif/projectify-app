@@ -37,16 +37,12 @@ class TeamMemberController {
             body: { password, passwordConfirm, email }
         } = req;
         if (!headers.authorization) {
-            throw new CustomError("You are not logged in. Please, log in", 401);
+            throw new CustomError("Invite Token is missing", 401);
         }
         const [prefix, token] = headers.authorization.split(" ");
-        console.log(prefix, token);
-        if (!prefix || token) {
-            throw new CustomError("Not Valid Token", 400);
-        }
 
-        if (!token) {
-            throw new CustomError("Invite Token is missing", 400);
+        if (!prefix || !token) {
+            throw new CustomError("Token was not sent in correct form", 400);
         }
 
         if (!password || !passwordConfirm || !email) {
@@ -89,6 +85,7 @@ class TeamMemberController {
         );
         res.status(204).send();
     });
+
     reactivate = catchAsync(async (req, res) => {
         const { adminId, body } = req;
         await teamMemberService.changeStatus(
@@ -110,14 +107,9 @@ class TeamMemberController {
                 400
             );
         }
-        const { token, projectIds, me } = await teamMemberService.login(
-            email,
-            password
-        );
+        const jwt = await teamMemberService.login(email, password);
         res.status(200).json({
-            token,
-            projectIds,
-            me
+            token: jwt
         });
     });
 
