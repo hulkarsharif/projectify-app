@@ -177,7 +177,9 @@ class AdminController {
         if (body.description) {
             input.description = body.description;
         }
-
+        if (body.due) {
+            input.due = body.due;
+        }
         if (!Object.keys(input).length)
             throw new CustomError("Update data not provided", 400);
 
