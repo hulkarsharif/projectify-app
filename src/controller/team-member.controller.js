@@ -10,14 +10,16 @@ class TeamMemberController {
             firstName: body.firstName,
             lastName: body.lastName,
             email: body.email,
-            position: body.position
+            position: body.position,
+            joinDate: body.joinDate
         };
 
         if (
             !input.firstName ||
             !input.lastName ||
             !input.email ||
-            !input.position
+            !input.position ||
+            !input.joinDate
         ) {
             throw new CustomError(
                 "All fields are required: First name, Last name, Email, Position",
@@ -25,9 +27,9 @@ class TeamMemberController {
             );
         }
 
-        await teamMemberService.create(adminId, input);
+        const teamMember = await teamMemberService.create(adminId, input);
         res.status(201).send({
-            message: `Team member with ${input.email} has been created!`
+            data: teamMember
         });
     });
 
@@ -75,12 +77,19 @@ class TeamMemberController {
         });
     });
 
+    delete = catchAsync(async (req, res) => {
+        const { adminId, body } = req;
+        await teamMemberService.delete(adminId, body.teamMemberId);
+
+        res.status(204).send();
+    });
+
     deactivate = catchAsync(async (req, res) => {
         const { adminId, body } = req;
         await teamMemberService.changeStatus(
             adminId,
             body.teamMemberId,
-            "INACTIVE"
+            "DEACTIVATED"
         );
         res.status(204).send();
     });
@@ -201,16 +210,13 @@ class TeamMemberController {
 
     getTasks = catchAsync(async (req, res) => {
         const { teamMember } = req;
-
         if (!teamMember.id) {
             throw new CustomError(
                 "Forbidden: You are not authorized to perform this action",
                 403
             );
         }
-
         const tasks = await teamMemberService.getTasks(teamMember.id);
-
         res.status(200).json({
             data: tasks
         });

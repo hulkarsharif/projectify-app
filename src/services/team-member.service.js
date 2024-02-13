@@ -11,17 +11,27 @@ class TeamMemberService {
         const inviteToken = crypto.createToken();
         const hashedInviteToken = crypto.hash(inviteToken);
 
-        await prisma.teamMember.create({
+        const teamMember = await prisma.teamMember.create({
             data: {
                 ...input,
                 adminId: adminId,
                 inviteToken: hashedInviteToken
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                position: true,
+                joinDate: true,
+                email: true,
+                status: true
             }
         });
         await mailer.sendCreatePasswordInviteToTeamMember(
             input.email,
             inviteToken
         );
+        return teamMember;
     };
 
     createPassword = async (inviteToken, password, email) => {
@@ -48,6 +58,43 @@ class TeamMemberService {
         });
     };
 
+    delete = async (adminId, teamMemberId) => {
+        const teamMember = await prisma.teamMember.findFirst({
+            where: {
+                id: teamMemberId
+            }
+        });
+
+        if (!teamMember) {
+            throw new CustomError(
+                `Team member does not exist with following id ${teamMemberId}`,
+                404
+            );
+        }
+
+        if (teamMember.adminId !== adminId) {
+            throw new CustomError(
+                "Forbidden: You are not authorized to perform this action",
+                403
+            );
+        }
+
+        if (
+            teamMember.status === "ACTIVE" ||
+            teamMember.status === "DEACTIVATED"
+        ) {
+            throw new CustomError(
+                "Only users with INACTIVE status can be deleted!"
+            );
+        }
+
+        await prisma.teamMember.delete({
+            where: {
+                id: teamMemberId
+            }
+        });
+    };
+
     getAll = async (adminId) => {
         const teamMembers = await prisma.teamMember.findMany({
             where: {
@@ -57,8 +104,10 @@ class TeamMemberService {
                 id: true,
                 firstName: true,
                 lastName: true,
+                email: true,
                 position: true,
-                createdAt: true
+                status: true,
+                joinDate: true
             }
         });
         return teamMembers;
@@ -125,7 +174,8 @@ class TeamMemberService {
                 lastName: true
             }
         });
-        if (!teamMember) throw new CustomError("User does not exist", 404);
+        if (!teamMember)
+            throw new CustomError("Team member does not exist", 404);
 
         if (teamMember.status === "INACTIVE") {
             const inviteToken = crypto.createToken();
@@ -148,7 +198,7 @@ class TeamMemberService {
                 400
             );
         }
-        if (teamMember.status === "INACTIVE" && teamMember.password) {
+        if (teamMember.status === "DEACTIVATED") {
             throw new CustomError(
                 "Oops. You do not have an access to the platform anymore!",
                 401

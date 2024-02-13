@@ -7,7 +7,7 @@ generator client {
     provider = "prisma-client-js"
 }
 
-enum AdminAccountStatus {
+enum AccountStatus {
     ACTIVE
     INACTIVE
 }
@@ -49,6 +49,14 @@ type Tasks {
     status      TaskStatus @default(TODO)
 }
 
+type SubTasks {
+    id          String
+    title       String
+    description String?
+    due         DateTime
+    status      TaskStatus
+}
+
 model Company {
     id       String @id @default(auto()) @map("_id") @db.ObjectId
     name     String
@@ -57,18 +65,18 @@ model Company {
 }
 
 model Admin {
-    id                               String             @id @default(auto()) @map("_id") @db.ObjectId
-    email                            String             @unique
+    id                               String        @id @default(auto()) @map("_id") @db.ObjectId
+    email                            String        @unique
     preferredFirstName               String?
     firstName                        String
     lastName                         String
     password                         String
-    status                           AdminAccountStatus @default(INACTIVE)
+    status                           AccountStatus @default(INACTIVE)
     activationToken                  String?
     passwordResetToken               String?
     passwordResetTokenExpirationDate DateTime?
-    createdAt                        DateTime           @default(now())
-    updatedAt                        DateTime           @updatedAt
+    createdAt                        DateTime      @default(now())
+    updatedAt                        DateTime      @updatedAt
     tasks                            Tasks[]
 }
 
@@ -94,6 +102,7 @@ model TeamMember {
     inviteToken                      String?
     passwordResetToken               String?
     passwordResetTokenExpirationDate DateTime?
+    joinDate                         DateTime?
     createdAt                        DateTime                @default(now())
     updatedAt                        DateTime                @updatedAt
     tasks                            Tasks[]
@@ -119,4 +128,5 @@ model Story {
     due         DateTime?
     point       Int?
     assigneeId  String?     @db.ObjectId
+    subTasks    SubTasks[]
 }
