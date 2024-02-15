@@ -238,36 +238,42 @@ class TeamMemberService {
         return token;
     };
 
-    changePassword = async (teamMemberId, input) => {
-        const { password, newPassword } = input;
-
-        const teamMember = await prisma.teamMember.findUnique({
+    changeStatus = async (adminId, teamMemberId, status) => {
+        const teamMember = await prisma.teamMember.findFirst({
             where: {
                 id: teamMemberId
-            },
-            select: {
-                password: true
             }
         });
 
         if (!teamMember) {
-            throw new CustomError("Team member  not found", 404);
+            throw new CustomError(
+                `Team member does not exist with following id ${teamMemberId}`,
+                404
+            );
         }
-        const passwordMatch = await bcrypt.compare(
-            password,
-            teamMember.password
-        );
-        if (!password) {
-            throw new CustomError("Invalid Credentials", 400);
+
+        if (teamMember.adminId !== adminId) {
+            throw new CustomError(
+                "Forbidden: You are not authorized to perform this action",
+                403
+            );
         }
-        const hashedPassword = await bcrypt.hash(newPassword);
+
+        if (teamMember.status === "INACTIVE") {
+            throw new CustomError(
+                "Status Change is now allowed. Users with INACTIVE status can be deleted only!",
+                403
+            );
+        }
 
         await prisma.teamMember.update({
             where: {
-                id: teamMemberId
+                id: teamMemberId,
+                adminId: adminId
             },
+
             data: {
-                password: hashedPassword
+                status: status
             }
         });
     };
