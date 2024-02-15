@@ -238,6 +238,40 @@ class TeamMemberService {
         return token;
     };
 
+    changePassword = async (teamMemberId, input) => {
+        const { password, newPassword } = input;
+
+        const teamMember = await prisma.teamMember.findUnique({
+            where: {
+                id: teamMemberId
+            },
+            select: {
+                password: true
+            }
+        });
+
+        if (!teamMember) {
+            throw new CustomError("Team member  not found", 404);
+        }
+        const passwordMatch = await bcrypt.compare(
+            password,
+            teamMember.password
+        );
+        if (!password) {
+            throw new CustomError("Invalid Credentials", 400);
+        }
+        const hashedPassword = await bcrypt.hash(newPassword);
+
+        await prisma.teamMember.update({
+            where: {
+                id: teamMemberId
+            },
+            data: {
+                password: hashedPassword
+            }
+        });
+    };
+
     forgotPassword = async (email) => {
         const teamMember = await prisma.teamMember.findFirst({
             where: {

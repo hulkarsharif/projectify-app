@@ -79,4 +79,11 @@ teamMemberRouter.patch(
     teamMemberController.deleteTask
 );
 
+teamMemberRouter.patch(
+    "/me/change-password",
+    authMiddleware.authenticate,
+    authMiddleware.isTeamMember,
+    teamMemberController.changePassword
+);
+
 export { teamMemberRouter };

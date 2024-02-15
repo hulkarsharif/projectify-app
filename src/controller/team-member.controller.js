@@ -248,6 +248,41 @@ class TeamMemberController {
         await teamMemberService.updateTask(teamMember.id, params.taskId, input);
         res.status(204).send();
     });
+
+    changePassword = catchAsync(async (req, res) => {
+        const { teamMember, body } = req;
+
+        const input = {
+            password: bodypassword,
+            newPassword: body.newPassword,
+            newConfirmPassword: body.newConfirmPassword
+        };
+        if (
+            !input.password ||
+            !input.newPassword ||
+            !input.newConfirmPassword
+        ) {
+            "All fields are required: Current and New Password, New Password Confirmation",
+                400;
+        }
+        if (input.password === input.newPassword) {
+            throw new CustomError(
+                "Provide Valid New Password which does not match Current Password",
+                400
+            );
+        }
+        if (input.newPassword === input.newConfirmPassword) {
+            throw new CustomError(
+                "New Password and New Password Confirm must match",
+                400
+            );
+        }
+        await teamMemberService.changePassword(teamMember.id, input);
+
+        res.status(200).json({
+            message: "You are successfully updated your password"
+        });
+    });
 }
 
 export const teamMemberController = new TeamMemberController();
