@@ -19,7 +19,7 @@ teamMemberRouter.get(
     teamMemberController.getAll
 );
 teamMemberRouter.patch(
-    "/deactivate",
+    "/:id/deactivate",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     teamMemberController.deactivate
@@ -32,7 +32,7 @@ teamMemberRouter.patch(
 );
 
 teamMemberRouter.delete(
-    "/delete",
+    "/:id/delete",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     teamMemberController.delete
