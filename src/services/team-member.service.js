@@ -59,14 +59,11 @@ class TeamMemberService {
     };
 
     delete = async (adminId, teamMemberId) => {
-        console.log(adminId, teamMemberId);
         const teamMember = await prisma.teamMember.findFirst({
             where: {
                 id: teamMemberId
             }
         });
-
-        console.log(teamMemberId);
 
         if (!teamMember) {
             throw new CustomError(
@@ -238,42 +235,38 @@ class TeamMemberService {
         return token;
     };
 
-    changeStatus = async (adminId, teamMemberId, status) => {
-        const teamMember = await prisma.teamMember.findFirst({
+    changePassword = async (teamMemberId, input) => {
+        const { password, newPassword } = input;
+
+        const teamMember = await prisma.teamMember.findUnique({
             where: {
                 id: teamMemberId
+            },
+            select: {
+                password: true
             }
         });
 
         if (!teamMember) {
-            throw new CustomError(
-                `Team member does not exist with following id ${teamMemberId}`,
-                404
-            );
+            throw new CustomError("Team member not found", 404);
         }
 
-        if (teamMember.adminId !== adminId) {
-            throw new CustomError(
-                "Forbidden: You are not authorized to perform this action",
-                403
-            );
+        const passwordMatch = await bcrypt.compare(
+            password,
+            teamMember.password
+        );
+
+        if (!passwordMatch) {
+            throw new CustomError("Invalid Credentials", 400);
         }
 
-        if (teamMember.status === "INACTIVE") {
-            throw new CustomError(
-                "Status Change is now allowed. Users with INACTIVE status can be deleted only!",
-                403
-            );
-        }
-
+        const hashedPassword = await bcrypt.hash(newPassword);
         await prisma.teamMember.update({
             where: {
-                id: teamMemberId,
-                adminId: adminId
+                id: teamMemberId
             },
-
             data: {
-                status: status
+                password: hashedPassword
             }
         });
     };
@@ -354,6 +347,26 @@ class TeamMemberService {
         });
     };
 
+    update = async (adminId, teamMemberId, input) => {
+        const teamMember = await prisma.teamMember.findUnique({
+            where: {
+                id: teamMemberId,
+                adminId: adminId
+            }
+        });
+
+        if (!teamMember) {
+            throw new CustomError("Team Member does not exist", 404);
+        }
+
+        await prisma.teamMember.update({
+            where: {
+                id: teamMemberId
+            },
+
+            data: input
+        });
+    };
     getMe = async (id) => {
         const teamMember = await prisma.teamMember.findUnique({
             where: {
