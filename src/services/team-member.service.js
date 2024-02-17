@@ -347,24 +347,15 @@ class TeamMemberService {
         });
     };
 
-    update = async (adminId, teamMemberId, input) => {
-        const teamMember = await prisma.teamMember.findUnique({
+    update = async (adminId, teamMemberId, updateData) => {
+        await prisma.teamMember.update({
             where: {
                 id: teamMemberId,
                 adminId: adminId
-            }
-        });
-
-        if (!teamMember) {
-            throw new CustomError("Team Member does not exist", 404);
-        }
-
-        await prisma.teamMember.update({
-            where: {
-                id: teamMemberId
             },
-
-            data: input
+            data: {
+                ...updateData
+            }
         });
     };
     getMe = async (id) => {
