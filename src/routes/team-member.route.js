@@ -93,4 +93,11 @@ teamMemberRouter.patch(
     teamMemberController.changePassword
 );
 
+teamMemberRouter.patch(
+    "/:id/change-password",
+    authMiddleware.authenticate,
+    authMiddleware.isAdmin,
+    teamMemberController.changePasswordByAdmin
+);
+
 export { teamMemberRouter };
