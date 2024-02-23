@@ -20,6 +20,7 @@ enum TeamMemberAccountStatus {
 
 enum ProjectStatus {
     ACTIVE
+    ONHOLD
     ARCHIVED
     COMPLETED
 }
@@ -117,7 +118,8 @@ model TeamMemberProject {
     projectId    String                  @db.ObjectId
     status       TeamMemberProjectStatus @default(ACTIVE)
     joinedAt     DateTime                @default(now())
-    // @@unique(fields: [teamMemberId, projectId]) this works only for SQL DB
+    createdAt    DateTime                @default(now())
+    updatedAt    DateTime                @updatedAt
 }
 
 model Story {
