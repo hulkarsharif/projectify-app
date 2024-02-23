@@ -7,16 +7,29 @@ class ProjectController {
         const { body, adminId } = req;
         const input = {
             name: body.name,
-            description: body.description
+            description: body.description,
+            startDate: body.startDate,
+            endDate: body.endDate
         };
 
-        if (!input.name || !input.description) {
-            throw new CustomError("Name and Description are required", 400);
+        if (
+            !input.name ||
+            !input.description ||
+            !input.startDate ||
+            !input.endDate
+        ) {
+            throw new CustomError("All Fields are required", 400);
+        }
+        if (new Date(input.startDate) >= new Date(input.endDate)) {
+            throw new CustomError(
+                "Start Date cannot be greated than End Date",
+                400
+            );
         }
 
-        await projectService.create(input, adminId);
-        res.status(201).send({
-            message: `New Project with name ${input.name} has been created`
+        const project = await projectService.create(input, adminId);
+        res.status(201).json({
+            data: project
         });
     });
 
@@ -44,7 +57,6 @@ class ProjectController {
         if (!update.name && !update.description) {
             throw new CustomError("No update data provided", 400);
         }
-
         await projectService.update(params.id, adminId, update);
         res.status(204).send();
     });
@@ -71,6 +83,14 @@ class ProjectController {
         await projectService.changeStatus(params.id, adminId, "ACTIVE");
         res.status(204).send();
     });
+
+    onhold = catchAsync(async (req, res) => {
+        const { params, adminId } = req;
+
+        await projectService.changeStatus(params.id, adminId, "ONHOLD");
+        res.status(204).send();
+    });
+
     addContributor = catchAsync(async (req, res) => {
         const { adminId, body } = req;
 
