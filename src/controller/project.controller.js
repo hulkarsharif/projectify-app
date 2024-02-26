@@ -77,13 +77,6 @@ class ProjectController {
         res.status(204).send();
     });
 
-    reactivate = catchAsync(async (req, res) => {
-        const { params, adminId } = req;
-
-        await projectService.changeStatus(params.id, adminId, "ACTIVE");
-        res.status(204).send();
-    });
-
     addContributor = catchAsync(async (req, res) => {
         const { adminId, body } = req;
 
