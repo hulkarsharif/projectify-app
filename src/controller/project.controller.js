@@ -102,64 +102,59 @@ class ProjectController {
     });
 
     addContributor = catchAsync(async (req, res) => {
-        const { adminId, body } = req;
+        const { adminId, body, params } = req;
 
-        if (!body.teamMemberId || !body.projectId) {
-            throw new CustomError(
-                "All fields are required: teamMemberId, projectId",
-                400
-            );
+        if (!body.teamMemberId) {
+            throw new CustomError("Team Member Id is required", 400);
         }
 
-        await projectService.addContributor(
-            body.projectId,
+        const data = await projectService.addContributor(
+            params.id,
             body.teamMemberId,
             adminId
         );
 
         res.status(200).json({
-            message: `Team member with ${body.teamMemberId} id was added to project with ${body.projectId} id`
+            data
         });
     });
 
     deactivateContributor = catchAsync(async (req, res) => {
-        const { adminId, body } = req;
-
-        if (!body.teamMemberId || !body.projectId) {
-            throw new CustomError(
-                "All fields are required: teamMemberId, projectId",
-                400
-            );
-        }
+        const { adminId, params } = req;
 
         await projectService.changeContributorStatus(
-            body.projectId,
-            body.teamMemberId,
+            params.id,
+            params.contributorId,
             adminId,
             "INACTIVE"
         );
-
         res.status(204).send();
     });
 
     reactivateContributor = catchAsync(async (req, res) => {
-        const { adminId, body } = req;
-
-        if (!body.teamMemberId || !body.projectId) {
-            throw new CustomError(
-                "All fields are required: teamMemberId, projectId",
-                400
-            );
-        }
+        const { adminId, params } = req;
 
         await projectService.changeContributorStatus(
-            body.projectId,
-            body.teamMemberId,
+            params.projectId,
+            body.contributorId,
             adminId,
             "ACTIVE"
         );
 
         res.status(204).send();
+    });
+
+    getContributors = catchAsync(async (req, res) => {
+        const { adminId, params } = req;
+
+        const contributors = await projectService.getContributors(
+            params.id,
+            adminId
+        );
+
+        res.status(200).json({
+            data: contributors
+        });
     });
 }
 export const projectController = new ProjectController();

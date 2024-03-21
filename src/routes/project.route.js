@@ -38,7 +38,7 @@ projectRouter.get(
     projectController.getOne
 );
 projectRouter.patch(
-    "/:id/update",
+    "/:id",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     projectController.update
