@@ -76,6 +76,7 @@ class ProjectController {
                 400
             );
         }
+        console.log(update);
 
         if (!update.name && !update.description) {
             throw new CustomError("No update data provided", 400);
@@ -115,7 +116,7 @@ class ProjectController {
         );
 
         res.status(200).json({
-            data
+            message: "Team Member has been successfully added as a contributor!"
         });
     });
 
@@ -136,7 +137,7 @@ class ProjectController {
 
         await projectService.changeContributorStatus(
             params.projectId,
-            body.contributorId,
+            params.contributorId,
             adminId,
             "ACTIVE"
         );
