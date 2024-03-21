@@ -5,24 +5,31 @@ import { projectController } from "../controller/project.controller.js";
 const projectRouter = Router();
 
 projectRouter.post(
-    "/contributors/add",
+    "/:id/contributors/add",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     projectController.addContributor
 );
 
 projectRouter.patch(
-    "/contributors/deactivate",
+    "/:id/contributors/deactivate",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     projectController.deactivateContributor
 );
 
 projectRouter.patch(
-    "/contributors/reactivate",
+    "/:id/contributors/:contributorId/reactivate",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     projectController.reactivateContributor
+);
+
+projectRouter.get(
+    "/:id/contributors",
+    authMiddleware.authenticate,
+    authMiddleware.isAdmin,
+    projectController.getContributors
 );
 
 projectRouter.post(
@@ -31,12 +38,14 @@ projectRouter.post(
     authMiddleware.isAdmin,
     projectController.create
 );
+
 projectRouter.get(
     "/:id",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
     projectController.getOne
 );
+
 projectRouter.patch(
     "/:id",
     authMiddleware.authenticate,
