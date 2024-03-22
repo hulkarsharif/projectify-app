@@ -12,10 +12,10 @@ projectRouter.post(
 );
 
 projectRouter.patch(
-    "/:id/contributors/deactivate",
+    "/:id/contributors/:teamMemberId/change-status",
     authMiddleware.authenticate,
     authMiddleware.isAdmin,
-    projectController.deactivateContributor
+    projectController.changeContributorStatus
 );
 
 projectRouter.patch(
