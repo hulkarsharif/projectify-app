@@ -1,7 +1,8 @@
 import { prisma } from "../prisma/index.js";
 import { CustomError } from "../utils/custom-error.js";
-import { objectifyArr } from "../utils.js";
-import { teamMemberService } from "../services/team-member.service.js";
+import { objectifyArr } from "../utils/mixed.js";
+
+import { teamMemberService } from "./team-member.service.js";
 
 class ProjectService {
     create = async (input, adminId) => {
@@ -14,6 +15,7 @@ class ProjectService {
 
         return project;
     };
+
     getOne = async (id, adminId) => {
         const project = await prisma.project.findUnique({
             where: {
@@ -70,14 +72,28 @@ class ProjectService {
             }
         });
 
-        return projects;
+        const contributors = await Promise.all(
+            projects.map((project) =>
+                this.getContributorsByProjectId(project.id, "ACTIVE")
+            )
+        );
+
+        const projectsWithNumberOfContributors = projects.map(
+            (project, idx) => {
+                return {
+                    ...project,
+                    numberOfContributors: contributors[idx].length
+                };
+            }
+        );
+
+        return projectsWithNumberOfContributors;
     };
 
     changeStatus = async (id, adminId, status) => {
-        const project = await prisma.project.update({
+        const project = await prisma.project.findUnique({
             where: {
-                id: id,
-                adminId: adminId
+                id: id
             }
         });
 
@@ -87,11 +103,10 @@ class ProjectService {
 
         if (project.adminId !== adminId) {
             throw new CustomError(
-                "Forbidden:You are not authorized to perform this action",
+                "Forbidden: You are not authorized to perform this action",
                 403
             );
         }
-
         await prisma.project.update({
             where: {
                 id: id,
@@ -110,7 +125,6 @@ class ProjectService {
             teamMemberId,
             adminId
         );
-
         const data = await prisma.contributor.create({
             data: { projectId, teamMemberId },
             select: {
@@ -119,6 +133,7 @@ class ProjectService {
                 teamMemberId: true
             }
         });
+
         return data;
     };
 
@@ -158,26 +173,16 @@ class ProjectService {
             }
         });
 
-        const contributors = await prisma.contributor.findMany({
-            where: {
-                teamMemberId: {
-                    in: teamMembers.map((teamMember) => teamMember.id)
-                },
-                projectId: projectId
-            },
-
-            select: {
-                teamMemberId: true,
-                status: true
-            }
-        });
+        const contributors = await this.getContributorsByProjectId(projectId);
 
         const teamMembersObj = objectifyArr(teamMembers, "id");
+        console.log(teamMembersObj);
 
         const contributorsWithDetails = contributors.map((contributor) => {
             return {
                 ...teamMembersObj[contributor.teamMemberId],
-                status: contributor.status
+                status: contributor.status,
+                joinedAt: contributor.joinedAt
             };
         });
 
@@ -210,5 +215,30 @@ class ProjectService {
             );
         }
     };
+
+    getContributorsByProjectId = async (id, status) => {
+        const where = {
+            projectId: id
+        };
+
+        if (status) {
+            where.status = status;
+        }
+
+        const contributors = await prisma.contributor.findMany({
+            where: {
+                ...where
+            },
+
+            select: {
+                teamMemberId: true,
+                status: true,
+                joinedAt: true
+            }
+        });
+
+        return contributors;
+    };
 }
+
 export const projectService = new ProjectService();

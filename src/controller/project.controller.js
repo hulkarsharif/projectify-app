@@ -144,5 +144,16 @@ class ProjectController {
 
         res.status(204).send();
     });
+
+    getContributors = catchAsync(async (req, res) => {
+        const { adminId, params } = req;
+        const contributors = await projectService.getContributors(
+            params.id,
+            adminId
+        );
+        res.status(200).json({
+            data: contributors
+        });
+    });
 }
 export const projectController = new ProjectController();
