@@ -59,7 +59,7 @@ class TeamMemberService {
     };
 
     delete = async (adminId, teamMemberId) => {
-        const teamMember = await prisma.teamMember.findFirst({
+        const teamMember = await prisma.teamMember.findUnique({
             where: {
                 id: teamMemberId
             }
