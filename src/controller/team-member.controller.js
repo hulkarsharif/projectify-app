@@ -87,6 +87,7 @@ class TeamMemberController {
     deactivate = catchAsync(async (req, res) => {
         const { adminId, params } = req;
         await teamMemberService.changeStatus(adminId, params.id, "DEACTIVATED");
+
         res.status(204).send();
     });
 

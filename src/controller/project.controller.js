@@ -116,7 +116,7 @@ class ProjectController {
         );
 
         res.status(200).json({
-            message: "Team Member has been successfully added as a contributor!"
+            data
         });
     });
 
