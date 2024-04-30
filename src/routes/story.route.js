@@ -11,6 +11,14 @@ storyRouter.post(
     authMiddleware.verifyCreateStoryPermissions,
     storyController.create
 );
+
+storyRouter.get(
+    "/project/:projectId",
+    authMiddleware.authenticate,
+    authMiddleware.isAdmin,
+    storyController.getAll
+);
+
 storyRouter.get(
     "/:id",
     authMiddleware.authenticate,

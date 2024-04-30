@@ -77,15 +77,15 @@ class AuthMiddleware {
                 );
             }
 
-            const teamMemberProject = await prisma.teamMemberProject.findFirst({
+            const contributor = await prisma.contributor.findFirst({
                 where: {
                     projectId: projectId
                 }
             });
             if (
-                !teamMemberProject ||
-                assigneeId !== teamMemberProject.teamMemberId ||
-                teamMemberProject.status === "INACTIVE"
+                !contributor ||
+                assigneeId !== contributor.teamMemberId ||
+                contributor.status === "INACTIVE"
             ) {
                 throw new CustomError(
                     "Team member you assigned to the story does not have an access to the Project",

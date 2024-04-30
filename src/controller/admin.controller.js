@@ -30,6 +30,7 @@ class AdminController {
     });
 
     login = catchAsync(async (req, res) => {
+        // console.log("login");
         const { body } = req;
         const input = {
             email: body.email,
