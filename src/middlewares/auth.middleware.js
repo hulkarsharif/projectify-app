@@ -25,7 +25,6 @@ class AuthMiddleware {
             if (payload.teamMember) {
                 req.teamMember = payload.teamMember;
             }
-
             next();
         } catch (error) {
             throw new CustomError(error.message, 500);
@@ -54,6 +53,7 @@ class AuthMiddleware {
                 403
             );
         }
+
         next();
     };
 
@@ -72,7 +72,7 @@ class AuthMiddleware {
 
             if (project.adminId !== adminId) {
                 throw new CustomError(
-                    "Forbidden:you are not authorized to perform this action",
+                    "Forbidden: You are not authorized to perform this action",
                     403
                 );
             }
@@ -82,16 +82,18 @@ class AuthMiddleware {
                     projectId: projectId
                 }
             });
+
             if (
                 !contributor ||
                 assigneeId !== contributor.teamMemberId ||
                 contributor.status === "INACTIVE"
             ) {
                 throw new CustomError(
-                    "Team member you assigned to the story does not have an access to the Project",
+                    "Team member you assigned to the story does not have an acsess to the Project",
                     403
                 );
             }
+
             next();
         }
     });
@@ -105,9 +107,11 @@ class AuthMiddleware {
             } = req;
 
             const story = await storyService.getOne(storyId);
+
             if (!story) {
                 throw new CustomError("Story does not exist", 404);
             }
+
             const { projectId } = story;
 
             const project = await prisma.project.findUnique({
@@ -115,11 +119,13 @@ class AuthMiddleware {
                     id: projectId
                 }
             });
-            if (!project)
+
+            if (!project) {
                 throw new CustomError(
                     "The Project of this story does not exist anymore",
                     404
                 );
+            }
 
             if (adminId) {
                 if (project.adminId !== adminId) {
