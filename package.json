@@ -11,11 +11,11 @@
         "prisma:g": "npx prisma generate --schema=./src/prisma/schema.prisma",
         "db:p": "npx prisma db push --schema=./src/prisma/schema.prisma"
     },
-    "author": "Ali Ramazon",
+    "author": "Khulkar Sharipova",
     "license": "ISC",
     "dependencies": {
-        "@prisma/client": "^5.3.1",
-        "bcryptjs": "^2.4.3",
+        "@prisma/client": "^5.16.1",
+        "bcrypt": "^5.1.1",
         "cookie-parser": "^1.4.6",
         "cookie-signature": "^1.2.1",
         "cors": "^2.8.5",
@@ -37,6 +37,7 @@
         "@types/uuid": "^9.0.8",
         "@typescript-eslint/eslint-plugin": "^7.11.0",
         "@typescript-eslint/parser": "^7.11.0",
+        "bcryptjs": "^2.4.3",
         "eslint": "^8.57.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-import-resolver-typescript": "^3.6.1",
